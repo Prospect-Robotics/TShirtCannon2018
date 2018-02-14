@@ -1,38 +1,38 @@
 package org.usfirst.frc.team2813.robot.commands;
 
 import org.usfirst.frc.team2813.robot.Robot;
+import org.usfirst.frc.team2813.robot.subsystems.Cannon;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
  *
  */
-public class Fire extends Command {
-	Solenoid solenoid;
-    public Fire(Solenoid s) {
-        reqires(Robot.getInstance().pneumatics);
+public class Fire extends TimedCommand {
+
+	private Cannon cannon;
+	public static double SOLENOID_ON_TIME = 0.25D;
+	
+    public Fire(Cannon cannon) {
+    	super(SOLENOID_ON_TIME);
+        requires(cannon);
+        requires(Robot.getInstance().pneumatics);
+        this.cannon=cannon;
     }
 
-    // Called just before this Command runs the first time
+    // Called as the command starts executing
     protected void initialize() {
+    	// disconnect the tank while firing:
+    	cannon.setPressurizing(false);
+    	cannon.solenoid.set(true);
     }
 
-    // Called repeatedly when this Command is scheduled to run
-    protected void execute() {
-    }
-
-    // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() {
-        return false;
-    }
-
-    // Called once after isFinished returns true
+    // Called as the command stops executing (after the set delay or when it is cancel()ed)
     protected void end() {
-    }
-
-    // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
-    protected void interrupted() {
+    	cannon.solenoid.set(false);
+    	// repressurize the cylinder
+    	cannon.setPressurizing(true);
     }
 }

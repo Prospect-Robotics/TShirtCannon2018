@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team2813.robot;
 
+import org.usfirst.frc.team2813.robot.subsystems.Cannon;
 import org.usfirst.frc.team2813.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2813.robot.subsystems.Pneumatics;
 
@@ -11,7 +12,6 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,9 +26,10 @@ public class Robot extends IterativeRobot {
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
-	public DriveTrain driveTrain;
+	public static DriveTrain driveTrain;
 	public Gyro gyro;
 	public Pneumatics pneumatics;
+	public Cannon leftCannon, rightCannon;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -39,10 +40,12 @@ public class Robot extends IterativeRobot {
 		instance=this;
 		driveTrain = new DriveTrain();
 		gyro = new ADXRS450_Gyro();
+		pneumatics = new Pneumatics(); 
+		leftCannon = new Cannon(false, RobotMap.leftCannonSolenoid);
+		rightCannon = new Cannon(true, RobotMap.rightCannonSolenoid);
+		
+		// It is very important that the OI is initialized last, otherwise you get NullPointerException
 		oi = new OI();
-		chooser.addDefault("Do nothing", null);
-	    chooser.addObject("Also nothing", null);
-		SmartDashboard.putData("Auto mode", chooser);
 	}
 
 	/**
